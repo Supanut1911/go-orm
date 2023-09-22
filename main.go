@@ -15,7 +15,8 @@ import (
 
 type Gender struct {
 	ID uint
-	Name string
+	Code uint `gorm:"primaryKey"`
+	Name string `gorm:"colume:myname;unique;default:YOYO;not null"`
 	Desc string
 }
 
@@ -64,5 +65,6 @@ func main() {
 	// 	panic("errCreatetable")
 	// }
 
-	db.AutoMigrate(Gender{})
+	// db.AutoMigrate(Gender{})
+	db.Migrator().CreateTable(Gender{})
 }
