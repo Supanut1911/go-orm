@@ -16,6 +16,7 @@ import (
 type Gender struct {
 	ID uint
 	Name string
+	Desc string
 }
 
 type SqlLogger struct {
@@ -58,5 +59,10 @@ func main() {
 		panic(err)
 	}
 
-	db.Migrator().CreateTable(Gender {})
+	// errCreatetable := db.Migrator().CreateTable(Gender {})
+	// if errCreatetable != nil {
+	// 	panic("errCreatetable")
+	// }
+
+	db.AutoMigrate(Gender{})
 }
