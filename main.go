@@ -13,12 +13,17 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-type Gender struct {
-	ID uint
-	Code uint `gorm:"primaryKey"`
+type Test struct {
+	gorm.Model
 	Name string `gorm:"colume:myname;unique;default:YOYO;not null"`
 	Desc string
 }
+
+type Gender struct {
+	ID uint
+	Name string `gorm:"unique"`	
+}
+
 
 type SqlLogger struct {
 	logger.Interface
@@ -53,18 +58,16 @@ func main() {
 	dbname := goDotEnvVariable("DBNAME")
 
 
-	dsn := fmt.Sprintf("host = %s port = %s user = %s password = %s dbname = %s sslmode=disable", host, port, user, password, dbname)
+	dsn := fmt.Sprintf("host = %s port = %s user = %s password = %s dbname = %s sslmode=disable TimeZone=Asia/Shanghai", host, port, user, password, dbname)
 	dial := postgres.Open(dsn)
-	db, err := gorm.Open(dial, &gorm.Config{Logger: &SqlLogger{}, DryRun: true})
+
+	var err error
+	db, err := gorm.Open(dial, &gorm.Config{Logger: &SqlLogger{}, DryRun: false})
 	if err != nil {
 		panic(err)
 	}
 
-	// errCreatetable := db.Migrator().CreateTable(Gender {})
-	// if errCreatetable != nil {
-	// 	panic("errCreatetable")
-	// }
+	_ = db
 
-	// db.AutoMigrate(Gender{})
-	db.Migrator().CreateTable(Gender{})
+	// db.AutoMigrate(Gender{}, Test{})
 }
