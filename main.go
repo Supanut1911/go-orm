@@ -1,19 +1,32 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Gender struct {
 	ID uint
 	Name string
 }
+
+type SqlLogger struct {
+	logger.Interface
+}
+
+func (l SqlLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error ) {
+	sql, _ := fc()
+	fmt.Printf("%v \n======================================\n", sql)
+}
+
 
 func goDotEnvVariable(key string) string {
 
@@ -40,7 +53,7 @@ func main() {
 
 	dsn := fmt.Sprintf("host = %s port = %s user = %s password = %s dbname = %s sslmode=disable", host, port, user, password, dbname)
 	dial := postgres.Open(dsn)
-	db, err := gorm.Open(dial)
+	db, err := gorm.Open(dial, &gorm.Config{Logger: &SqlLogger{}})
 	if err != nil {
 		panic(err)
 	}
