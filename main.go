@@ -35,6 +35,8 @@ func (l SqlLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql st
 }
 
 
+
+
 func goDotEnvVariable(key string) string {
 
   // load .env file
@@ -47,22 +49,20 @@ func goDotEnvVariable(key string) string {
   return os.Getenv(key)
 }
 
-
+var db *gorm.DB
 
 func main() {
-
 	host := goDotEnvVariable("HOST")
 	port := goDotEnvVariable("PORT")
 	user := goDotEnvVariable("USERNAME")
 	password := goDotEnvVariable("PASSWORD")
-	dbname := goDotEnvVariable("DBNAME")
-
+	dbname := goDotEnvVariable("DBNAME") 
 
 	dsn := fmt.Sprintf("host = %s port = %s user = %s password = %s dbname = %s sslmode=disable TimeZone=Asia/Shanghai", host, port, user, password, dbname)
 	dial := postgres.Open(dsn)
 
 	var err error
-	db, err := gorm.Open(dial, &gorm.Config{Logger: &SqlLogger{}, DryRun: false})
+	db, err = gorm.Open(dial, &gorm.Config{Logger: &SqlLogger{}, DryRun: false})
 	if err != nil {
 		panic(err)
 	}
@@ -70,4 +70,16 @@ func main() {
 	_ = db
 
 	// db.AutoMigrate(Gender{}, Test{})
+
+	CreateGender("LGBT+")
+}
+
+func CreateGender(name string) {
+	gender := Gender{Name: name}
+	tx := db.Create(&gender)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+	fmt.Println(gender)
 }
