@@ -54,7 +54,7 @@ func main() {
 
 	dsn := fmt.Sprintf("host = %s port = %s user = %s password = %s dbname = %s sslmode=disable", host, port, user, password, dbname)
 	dial := postgres.Open(dsn)
-	db, err := gorm.Open(dial, &gorm.Config{Logger: &SqlLogger{}})
+	db, err := gorm.Open(dial, &gorm.Config{Logger: &SqlLogger{}, DryRun: true})
 	if err != nil {
 		panic(err)
 	}
