@@ -73,7 +73,9 @@ func main() {
 
 	// CreateGender("LGBT+")
 	
-	GetGenders()
+	// GetGenders()
+	// GetGenderById(50)
+	GetGenderByName("Male")
 }
 
 func CreateGender(name string) {
@@ -94,4 +96,25 @@ func GetGenders() {
 		return
 	}
 	fmt.Println(genders)
+}
+
+func GetGenderById(id uint) {
+	gender := Gender{}
+	tx := db.Find(&gender, id)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+	fmt.Println(gender)
+}
+
+func GetGenderByName(name string) {
+	gender := Gender{}
+	// tx := db.Find(&gender, "name=?", name)
+	tx := db.Where("name=?", name).Find(&gender)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+	fmt.Println(gender)
 }
