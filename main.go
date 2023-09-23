@@ -75,7 +75,9 @@ func main() {
 	
 	// GetGenders()
 	// GetGenderById(50)
-	GetGenderByName("Male")
+	// GetGenderByName("Male")
+	// UpdateGender(1, "malee")
+	UpdateGender2(1, "MMALE")
 }
 
 func CreateGender(name string) {
@@ -118,3 +120,39 @@ func GetGenderByName(name string) {
 	}
 	fmt.Println(gender)
 }
+
+//ท่า1 -> query by id มาก่อน, แก้ไขบาง field จากนั้น save
+func UpdateGender(id uint, name string) {
+	gender := Gender{}
+
+	//get by id
+	tx := db.First(&gender, id)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+
+	//update 
+	gender.Name = name
+
+	tx = db.Save(gender)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+	fmt.Print("update success", gender)
+}
+
+//ท่า2 -> ท่านั้นไม่ได้ไป query จาก db, ตอนทที่ instance ให้ใส่ค่าที่จะ update เข้าไปเลย
+func UpdateGender2(id uint, name string) {
+	gender := Gender{Name: name}
+	tx := db.Model(&Gender{}).Where("id = ?", id).Updates(gender)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+
+	GetGenderById(id)
+
+}
+
