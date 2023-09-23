@@ -77,7 +77,8 @@ func main() {
 	// GetGenderById(50)
 	// GetGenderByName("Male")
 	// UpdateGender(1, "malee")
-	UpdateGender2(1, "MMALE")
+	// UpdateGender2(1, "MMALE")
+	DeleteGender(5)
 }
 
 func CreateGender(name string) {
@@ -156,3 +157,13 @@ func UpdateGender2(id uint, name string) {
 
 }
 
+func DeleteGender(id uint) {
+	tx := db.Delete(&Gender{}, id)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+	fmt.Print("Deleted ")
+	GetGenderById(id)
+	
+}
