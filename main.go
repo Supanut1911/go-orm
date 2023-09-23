@@ -71,7 +71,9 @@ func main() {
 
 	// db.AutoMigrate(Gender{}, Test{})
 
-	CreateGender("LGBT+")
+	// CreateGender("LGBT+")
+	
+	GetGenders()
 }
 
 func CreateGender(name string) {
@@ -82,4 +84,14 @@ func CreateGender(name string) {
 		return
 	}
 	fmt.Println(gender)
+}
+
+func GetGenders() {
+	genders := []Gender{}
+	tx := db.Order("id desc").Find(&genders)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+	fmt.Println(genders)
 }
