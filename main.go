@@ -15,6 +15,7 @@ import (
 
 type Test struct {
 	gorm.Model
+	Code uint
 	Name string `gorm:"colume:myname;unique;default:YOYO;not null"`
 	Desc string
 }
@@ -78,7 +79,12 @@ func main() {
 	// GetGenderByName("Male")
 	// UpdateGender(1, "malee")
 	// UpdateGender2(1, "MMALE")
-	DeleteGender(5)
+	// DeleteGender(5)
+	// CreateTest(0, "Test1")
+	// CreateTest(0, "Test2")
+	// CreateTest(0, "Test3")
+	// DeleteTest(3)
+	GetTests()
 }
 
 func CreateGender(name string) {
@@ -91,6 +97,16 @@ func CreateGender(name string) {
 	fmt.Println(gender)
 }
 
+func CreateTest(code uint, name string){
+	test := Test{Code: code, Name: name}
+	tx := db.Create(&test)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+	fmt.Println(test)
+}
+
 func GetGenders() {
 	genders := []Gender{}
 	tx := db.Order("id desc").Find(&genders)
@@ -99,6 +115,19 @@ func GetGenders() {
 		return
 	}
 	fmt.Println(genders)
+}
+
+func GetTests() {
+	tests := []Test{}
+	tx := db.Find(&tests)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+
+	for _, t := range tests {
+		fmt.Printf("%v | %v \n", t.ID, t.Name)
+	}
 }
 
 func GetGenderById(id uint) {
@@ -166,4 +195,14 @@ func DeleteGender(id uint) {
 	fmt.Print("Deleted ")
 	GetGenderById(id)
 	
+}
+
+
+func DeleteTest(id uint) {
+	tx := db.Delete(&Test{}, id)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+	fmt.Print("Deleted ")
 }
