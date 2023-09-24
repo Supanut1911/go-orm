@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
 )
 
@@ -25,6 +26,12 @@ type Gender struct {
 	Name string `gorm:"unique"`	
 }
 
+type Customer struct {
+	ID uint
+	Name string
+	Gender Gender
+	GenderID uint
+}
 
 type SqlLogger struct {
 	logger.Interface
@@ -70,10 +77,10 @@ func main() {
 
 	_ = db
 
-	// db.AutoMigrate(Gender{}, Test{})
+	// db.AutoMigrate(Gender{}, Test{}, Customer{})
 
 	// CreateGender("LGBT+")
-	
+
 	// GetGenders()
 	// GetGenderById(50)
 	// GetGenderByName("Male")
@@ -83,8 +90,13 @@ func main() {
 	// CreateTest(0, "Test1")
 	// CreateTest(0, "Test2")
 	// CreateTest(0, "Test3")
-	// DeleteTest(3)
-	GetTests()
+	// DeleteTest(2)
+	// GetTests()
+
+	// db.Migrator().CreateTable(Customer{})
+	// db.AutoMigrate(Customer{})
+	// CreateCustomer("Nut", 1)
+	GetCustomers()
 }
 
 func CreateGender(name string) {
@@ -199,10 +211,40 @@ func DeleteGender(id uint) {
 
 
 func DeleteTest(id uint) {
-	tx := db.Delete(&Test{}, id)
+	tx := db.Unscoped().Delete(&Test{}, id)
 	if tx.Error != nil {
 		fmt.Print(tx.Error)
 		return
 	}
 	fmt.Print("Deleted ")
+}
+
+func CreateCustomer(name string, genderID uint) {
+	customer := Customer{
+		Name: name,
+		GenderID: genderID,
+	}
+
+	tx := db.Create(&customer)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+
+	fmt.Print("Created !!,", customer)
+}
+
+func GetCustomers() {
+	customers := []Customer{}
+	// tx := db.Preload("Gender").Find(&customers)
+	tx := db.Preload(clause.Associations).Find(&customers)
+	if tx.Error != nil {
+		fmt.Print(tx.Error)
+		return
+	}
+
+	for _, c := range customers {
+		fmt.Printf("%v | %v | %v\n", c.ID, c.Name, c.Gender.Name)
+		
+	}
 }
